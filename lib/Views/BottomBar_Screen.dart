@@ -6,11 +6,11 @@ import 'package:flutter_covid_app/Views/calendar_screen.dart';
 // import 'package:flutter_covid_app/Views/calendar_screen.dart';
 
 void main() {
-  runApp(const BottombarScreen());
+  runApp(const bottombar_screen());
 }
 
-class BottombarScreen extends StatelessWidget {
-  const BottombarScreen({super.key});
+class bottombar_screen extends StatelessWidget {
+  const bottombar_screen({super.key});
 
   @override
   Widget build(BuildContext context) {

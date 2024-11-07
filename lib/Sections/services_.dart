@@ -43,10 +43,10 @@ class _ServicesState extends State<Services> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Serviceicon(Icons.coronavirus, 'Covid-19'),
-                Serviceicon(Icons.person_4_sharp, 'Doctors'),
-                Serviceicon(Icons.add_outlined, 'Hospitals'),
-                Serviceicon(Icons.medical_services, 'Medicines'),
+                serviceicon(Icons.coronavirus, 'Covid-19'),
+                serviceicon(Icons.person_4_sharp, 'Doctors'),
+                serviceicon(Icons.add_outlined, 'Hospitals'),
+                serviceicon(Icons.medical_services, 'Medicines'),
               ],
             ),
           ],
@@ -55,15 +55,15 @@ class _ServicesState extends State<Services> {
     );
   }
 
-  Widget Serviceicon(IconData icon, String label) {
+  Widget serviceicon(IconData icon, String label) {
     return Column(
       children: [
         CircleAvatar(
           radius: 40,
-          backgroundColor: Color(0xFFcbe0e3),
+          backgroundColor: const Color(0xFFcbe0e3),
           child: CircleAvatar(
             radius: 30,
-            backgroundColor: Color(0xFF81b6be),
+            backgroundColor: const Color(0xFF81b6be),
             child: Icon(
               icon,
               color: Colors.black,
