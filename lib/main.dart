@@ -2,11 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_covid_app/Sections/reports_.dart';
 import 'package:flutter_covid_app/Sections/services_.dart';
-import 'package:flutter_covid_app/Sections/user_info.dart';
 import 'package:flutter_covid_app/Views/BottomBar_Screen.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_covid_app/screen/splash_screen.dart';
-// import 'package:flutter_covid_app/screen/login';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,28 +50,26 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 350,
-              width: double.infinity,
-              child: UserInfo(),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Services(),
-            const SizedBox(
-              height: 2,
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            const Reports(),
-            // BottomAppBar(),
-          ],
-        ),
+      body: Column(
+        children: [
+          const SizedBox(
+            height: 300,
+            width: double.infinity,
+            // child: UserInfo(),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const Services(),
+          const SizedBox(
+            height: 2,
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          const Reports(),
+          // BottomAppBar(),
+        ],
       ),
       bottomNavigationBar: const bottombar_screen(),
     );

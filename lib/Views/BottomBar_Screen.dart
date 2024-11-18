@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_covid_app/Sections/reports_.dart';
 import 'package:flutter_covid_app/Sections/services_.dart';
 import 'package:flutter_covid_app/Sections/user_info.dart';
-import 'package:flutter_covid_app/Views/calendar_screen.dart';
+import 'package:flutter_covid_app/Views/Payment_screen.dart';
 // import 'package:flutter_covid_app/Views/calendar_screen.dart';
 
 void main() {
@@ -41,22 +41,24 @@ class _MyHomePageState extends State<MyHomePage> {
   int currentIndexvalue = 0;
 
   List<Widget> screenList = [
-    Column(
-      children: const [
-        SizedBox(
-          height: 350,
-          width: double.infinity,
-          child: UserInfo(),
-        ),
-        SizedBox(height: 20),
-        Services(),
-        SizedBox(height: 2),
-        SizedBox(height: 8),
-        Reports(),
-      ],
+    SingleChildScrollView(
+      child: Column(
+        children: const [
+          SizedBox(
+            height: 350,
+            width: double.infinity,
+            child: UserInfo(),
+          ),
+          SizedBox(height: 20),
+          Services(),
+          SizedBox(height: 2),
+          SizedBox(height: 8),
+          Reports(),
+        ],
+      ),
     ),
     const Center(child: Text('File Screen')),
-    CalendarScreen(),
+    paymentScreen(),
     // const Center(child: Text('Calendar Screen')),
     const Center(child: Text('Settings Screen')),
   ];
@@ -74,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 currentIndexvalue = index;
               });
             },
-            selectedItemColor: Colors.yellow,
+            selectedItemColor: Color(0xFF418f9b),
             unselectedItemColor: const Color(0xFFa0a0a0),
             showSelectedLabels: true,
             showUnselectedLabels: false,
@@ -89,8 +91,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 label: 'File',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_month_outlined),
-                label: 'Calendar',
+                icon: Icon(Icons.payment),
+                label: 'Payment',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings),
@@ -105,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Container(
               width: 40,
               height: 10,
-              color: Colors.yellow,
+              color: Color(0xFF418f9b),
             ),
           ),
         ],

@@ -1,26 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_covid_app/main.dart';
 import 'package:flutter_covid_app/screen/registration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashScreen> createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class SplashScreenState extends State<SplashScreen> {
+  static const String KEYLOGIN = "Login";
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 5), () {
-      Navigator.pushReplacement(
-        context,
-        // MaterialPageRoute(builder: (context) => Registration()),
-        MaterialPageRoute(builder: (context) => Registration()),
-      );
-    });
+
+    wherTOGo();
   }
 
   @override
@@ -29,18 +27,18 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
-          // gradient: LinearGradient(
-          //   colors: [Colors.white, Colors.red],
-          //   begin: Alignment.topRight,
-          //   end: Alignment.bottomLeft,
-          // ),
+          // color: Colors.white,
+          gradient: LinearGradient(
+            colors: [Colors.white, Color(0xFF418f9b)],
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/icon.jpg',
+              'assets/images/img7.png',
               height: 500,
             ),
             // Icon(
@@ -56,4 +54,39 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
+
+  void wherTOGo() async {
+    var sharedpref = await SharedPreferences.getInstance();
+
+    var isLoggedIn = sharedpref.getBool(KEYLOGIN);
+    Timer(Duration(seconds: 2), () {
+      if (isLoggedIn != null) {
+        if (isLoggedIn) {
+          Navigator.pushReplacement(
+              context,
+              // MaterialPageRoute(builder: (context) => Registration()),
+              MaterialPageRoute(builder: (context) => MyHomePage(title: '')));
+          // MaterialPageRoute(builder: (context) => Registration()));
+        } else {
+          Navigator.pushReplacement(
+              context,
+              // MaterialPageRoute(builder: (context) => Registration()),
+              MaterialPageRoute(builder: (context) => Registration()));
+        }
+      } else {
+        Navigator.pushReplacement(
+          context,
+          // MaterialPageRoute(builder: (context) => Registration()),
+          MaterialPageRoute(builder: (context) => Registration()),
+        );
+      }
+    });
+  }
 }
+
+
+// Navigator.pushReplacement(
+      //   context,
+      //   // MaterialPageRoute(builder: (context) => Registration()),
+      //   MaterialPageRoute(builder: (context) => Registration()),
+      // );

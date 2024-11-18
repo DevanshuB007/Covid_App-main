@@ -1,6 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_covid_app/screen/otpscreen.dart';
+import 'package:flutter_covid_app/screen/splash_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Registration extends StatefulWidget {
   const Registration({super.key});
@@ -11,7 +14,6 @@ class Registration extends StatefulWidget {
 
 class _RegistrationState extends State<Registration> {
   TextEditingController phoneController = TextEditingController();
-  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,7 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  bool isLoading = false;
+  bool isLoading = false; // Track if the button is in loading state
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +50,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.asset(
-                  'assets/images/img2.png',
-                  height: height * 0.35,
+                const SizedBox(height: 20),
+                Center(
+                  child: Image.asset(
+                    'assets/images/img6.png',
+                    height: 300,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 Column(
                   children: [
@@ -65,7 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 100),
+                const SizedBox(height: 100),
                 Column(
                   children: [
                     Container(
@@ -77,67 +83,112 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                       child: Row(
                         children: [
-                          Text(
+                          const Text(
                             '+91',
                             style: TextStyle(fontSize: 16),
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: TextField(
                               controller: widget.phoneController,
                               keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Enter Phone Number',
-                                  hintStyle: TextStyle(color: Colors.black38)),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(10),
+                              ],
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Enter Phone Number',
+                                hintStyle: TextStyle(color: Colors.black38),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
                     Column(
                       children: [
-                        ElevatedButton(
-                          onPressed: () async {
-                            if (_isValidPhoneNumber(
-                                widget.phoneController.text)) {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              await _verifyPhoneNumber(context);
-                              setState(() {
-                                isLoading = false;
-                              });
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('Enter a valid number')));
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF418f9b),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: width * 0.30,
-                              vertical: height * 0.02,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                          ),
-                          child: Text(
-                            'Continue',
-                            style: TextStyle(
-                              fontSize: width * 0.045,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
                         SizedBox(
-                          height: 16,
+                          width: double.infinity, // Make button fill the width
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null // Disable the button while loading
+                                : () async {
+                                    if (_isValidPhoneNumber(
+                                        widget.phoneController.text)) {
+                                      // Set loading state to true
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      await Future.delayed(
+                                          const Duration(seconds: 10));
+
+                                      try {
+                                        // if Sucessfully Loggin(cred are correct)
+
+                                        var sharepref = await SharedPreferences
+                                            .getInstance();
+                                        sharepref.setBool(
+                                            SplashScreenState.KEYLOGIN, true);
+                                        // Perform phone number verification
+                                        await _verifyPhoneNumber(context);
+                                      } catch (e) {
+                                        // Show error if verification fails
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content:
+                                                Text('Error: ${e.toString()}'),
+                                          ),
+                                        );
+                                      } finally {
+                                        // Reset loading state once finished
+                                        // setState(() {
+                                        //   isLoading = false;
+                                        // });
+                                      }
+                                    } else {
+                                      // Show error if phone number is invalid
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Enter a valid 10-digit number'),
+                                        ),
+                                      );
+                                      // // if Sucessfully Loggin(cred are correct)
+
+                                      // var sharepref =
+                                      //     await SharedPreferences.getInstance();
+                                      // sharepref.setBool(
+                                      //     SplashScreenState.KEYLOGIN, true);
+                                    }
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF418f9b),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: width * 0.30,
+                                vertical: height * 0.02,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                            ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white, // White spinner
+                                  )
+                                : const Text(
+                                    'Continue',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
                         ),
+                        const SizedBox(height: 16),
                       ],
                     ),
                   ],
@@ -166,13 +217,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       },
       verificationFailed: (FirebaseAuthException e) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Verification failed: ${e.message}')));
+          SnackBar(content: Text('Verification failed: ${e.message}')),
+        );
       },
       codeSent: (String verificationId, int? resendToken) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Otpscreen(verificationId: verificationId),
+            builder: (context) => Otpscreen(
+              verificationId: verificationId,
+              mobileNumber: phoneNumber,
+            ),
           ),
         );
       },

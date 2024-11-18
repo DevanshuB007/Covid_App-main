@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_covid_app/Sections/user_info.dart';
 import 'package:flutter_covid_app/Views/BottomBar_Screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -23,10 +22,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
   File? pickedImage;
+  late String Phone;
 
   bool isLoading = false;
 
-  // Initialize Firebase and Firestore
   @override
   void initState() {
     super.initState();
@@ -64,13 +63,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       try {
         usercredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
-        print('................1');
+        print('emsil uplosd');
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('email', email);
+        Phone = (await prefs.getString('Phone')) ?? '';
         print('Email saved in SharedPreferences');
 
         uploadData();
-        print('................8');
+        print('phone upload');
       } on FirebaseAuthException catch (ex) {
         log(ex.code.toString());
 
@@ -99,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   uploadData() async {
     print('User information uploaded to Firestore');
     if (pickedImage != null) {
-      print('................5');
+      print('................$Phone');
       UploadTask uploadTask = FirebaseStorage.instance
           .ref("profile_pics/$_emailController")
           .child(_emailController.toString())
@@ -108,14 +108,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       TaskSnapshot taskSnapshot = await uploadTask;
       String url = await taskSnapshot.ref.getDownloadURL();
 
-      // Save user information to Firestore
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(_emailController.text.toString())
+          .doc(Phone.toString())
           .set({
         'email': _emailController.text.toString(),
         'name': _nameController.text,
         'dob': _dobController.text,
+        'Phone': Phone,
         'profilePicUrl': url
       }).then((Value) {
         log("User Uploaded");
@@ -171,7 +171,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(height: 40),
                 Center(
                   child: Image.asset(
-                    'assets/images/img4.png', // Replace with your asset image
+                    'assets/images/img4.png',
                     height: 250,
                   ),
                 ),
@@ -180,7 +180,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   'Enter your details',
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w900,
                     color: Colors.black54,
                   ),
                 ),
@@ -196,7 +196,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           backgroundImage: FileImage(pickedImage!),
                         )
                       : CircleAvatar(
-                          radius: 50,
+                          radius: 40,
                           backgroundColor: Color(0xFF418f9b),
                           child: Icon(
                             Icons.person,
@@ -206,7 +206,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                 ),
                 SizedBox(height: 16),
-                // Email TextField
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -221,7 +220,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
-                // Name TextField
                 TextField(
                   controller: _nameController,
                   decoration: InputDecoration(
@@ -236,7 +234,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
-                // Date of Birth TextField
                 TextField(
                   controller: _dobController,
                   readOnly: true,
@@ -268,8 +265,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 SizedBox(height: 40),
-                // Sign Up Button
-
                 ElevatedButton(
                   onPressed: () {
                     signUp(
